@@ -6,10 +6,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['@typescript-eslint/eslint-plugin'],
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:prettier/recommended',
-  ],
+  extends: ['airbnb-base', 'airbnb-typescript/base', 'plugin:import/recommended'],
   root: true,
   env: {
     node: true,
@@ -21,5 +18,37 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    'import/prefer-default-export': 'off',
+    'class-methods-use-this': 'off',
+    // 가져오기 누락시 오류
+    'import/no-unresolved': 'error',
+    // import 순서정의
+    'import/order': [
+      'error',
+      {
+        groups: ['builtin', 'internal', 'external', 'type', 'unknown'],
+        pathGroups: [
+          {
+            pattern: '@nestjs/*',
+            group: 'builtin',
+            position: 'before',
+          },
+          {
+            pattern: '*.controller',
+            group: 'internal',
+            position: 'before',
+          },
+          {
+            pattern: '*.service',
+            group: 'internal',
+            position: 'after',
+          },
+        ],
+        alphabetize: {
+          order: 'asc',
+        },
+        'newlines-between': 'always',
+      },
+    ],
   },
 };
