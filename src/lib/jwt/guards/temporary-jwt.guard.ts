@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 
 import type { Request } from 'express';
 
-import { TemporaryJwtPayload } from './temporary-jwt.interface';
+import { TemporaryJwtPayload } from '../jwt-utility.interface';
 import { JwtUtilityService } from '../jwt-utility.service';
 
 @Injectable()

@@ -10,9 +10,9 @@ import { JwtUtilityService } from './jwt-utility.service';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         return {
-          secret: configService.get<string>('AUTH_JWT_SECRET'),
+          secret: configService.getOrThrow<string>('AUTH_JWT_SECRET'),
           signOptions: {
-            expiresIn: configService.get<string>('AUTH_JWT_EXPIRE'),
+            expiresIn: configService.getOrThrow<string>('AUTH_JWT_EXPIRE'),
           },
         };
       },

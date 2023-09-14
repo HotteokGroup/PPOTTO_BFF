@@ -3,8 +3,8 @@ import { Reflector } from '@nestjs/core';
 
 import type { Request } from 'express';
 
-import { IS_AUTH_OPTIONAL } from './auth-jwt.decorator';
-import { AuthJwtPayload } from './auth-jwt.interface';
+import { IS_AUTH_OPTIONAL } from '../decorators/auth-jwt.decorator';
+import { AuthJwtPayload } from '../jwt-utility.interface';
 import { JwtUtilityService } from '../jwt-utility.service';
 
 @Injectable()

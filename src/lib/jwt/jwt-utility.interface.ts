@@ -1,3 +1,8 @@
+export interface AuthJwtPayload {
+  /** User ID */
+  id: string;
+}
+
 export interface TemporaryJwtPayload {
   /** 인증 ID */
   id: string;
