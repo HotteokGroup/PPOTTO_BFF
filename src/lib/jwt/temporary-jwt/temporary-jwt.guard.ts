@@ -1,22 +1,22 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 
 import type { Request } from 'express';
-import type { TemporaryJwtPayload } from 'src/lib/auth/temporary-jwt/temporary-jwt.interface';
 
-import { TemporaryJwtService } from './temporary-jwt.service';
+import { TemporaryJwtPayload } from './temporary-jwt.interface';
+import { JwtUtilityService } from '../jwt-utility.service';
 
 @Injectable()
 export class TemporaryJwtGuard implements CanActivate {
-  constructor(private temporaryJwtService: TemporaryJwtService) {}
+  constructor(private readonly jwtUtilityService: JwtUtilityService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest<Request & { temporaryUser: TemporaryJwtPayload }>();
+    const request = context.switchToHttp().getRequest<Request & { user: TemporaryJwtPayload }>();
     const token = this.extractTokenFromHeader(request);
     if (!token) throw new UnauthorizedException();
 
     try {
-      const payload = await this.temporaryJwtService.validationToken(token);
-      request.temporaryUser = payload;
+      const payload = await this.jwtUtilityService.validationTemporaryToken(token);
+      request.user = payload;
     } catch (error) {
       throw new UnauthorizedException();
     }
