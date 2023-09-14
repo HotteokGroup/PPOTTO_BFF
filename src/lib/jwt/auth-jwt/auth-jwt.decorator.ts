@@ -2,7 +2,7 @@ import { createParamDecorator, ExecutionContext, SetMetadata } from '@nestjs/com
 
 import { AuthJwtPayload } from './auth-jwt.interface';
 
-export const UserAuth = createParamDecorator((_: unknown, ctx: ExecutionContext) => {
+export const UserInfo = createParamDecorator((_: unknown, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest<Request & { user: AuthJwtPayload }>();
   const payload = request.user;
   return { user: payload?.id ?? null };
