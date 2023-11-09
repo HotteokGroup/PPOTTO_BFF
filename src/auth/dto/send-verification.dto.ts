@@ -25,7 +25,7 @@ export class SendVerificationRequest {
 export class SendVerificationResponse {
   @Expose()
   @ApiProperty({
-    description: 'id',
+    description: '인증 요청 결과 아이디',
   })
   id: string;
 }
