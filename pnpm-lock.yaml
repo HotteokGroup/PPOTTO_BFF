@@ -27,8 +27,8 @@ dependencies:
     specifier: ^7.1.11
     version: 7.1.11(@nestjs/common@10.0.0)(@nestjs/core@10.0.0)(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)
   '@ppotto/user-api-client':
-    specifier: ^0.0.3
-    version: 0.0.3
+    specifier: ^0.0.5
+    version: 0.0.5
   axios:
     specifier: ^1.6.0
     version: 1.6.0
@@ -1133,8 +1133,8 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /@ppotto/user-api-client@0.0.3:
-    resolution: {integrity: sha512-JzoL+jt9edhHRyoeCKxRMKViRMP9lLtkkIkqmgFSyIevm/HpYdFrFw3cjGW0ISNh5rbwiG7UW8iaBbhwS8UnAA==}
+  /@ppotto/user-api-client@0.0.5:
+    resolution: {integrity: sha512-FPM7S5wXsMnT9IOaXdh5w3CYZ7+xd7EkaVWgDxjXDdJtvV8zQ+FVZKvMbJibDwEy11q5GkB7RMKQrHB3hqSwDw==}
     dependencies:
       axios: 1.6.0
     transitivePeerDependencies:

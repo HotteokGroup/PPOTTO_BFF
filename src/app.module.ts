@@ -13,7 +13,6 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { AllExceptionsFilter } from './lib/exception/all-exception.filter';
 import { ERROR_CODE } from './lib/exception/error.constant';
-import { AxiosErrorInterceptor } from './lib/interceptor/axios-error.interceptor';
 
 @Module({
   imports: [
@@ -38,10 +37,6 @@ import { AxiosErrorInterceptor } from './lib/interceptor/axios-error.interceptor
     {
       provide: APP_INTERCEPTOR,
       useClass: ClassSerializerInterceptor,
-    },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: AxiosErrorInterceptor,
     },
     {
       provide: APP_FILTER,

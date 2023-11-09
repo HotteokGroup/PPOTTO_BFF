@@ -11,7 +11,7 @@ const dynamicRecord = <T extends { [key in keyof T]: ErrorObject<key> }>(
   errorObject: T,
 ): T & Record<string, ErrorObject<keyof T>> => errorObject;
 
-export const isErrorObject = (object: object): object is ErrorObject<string> => {
+export const isErrorObject = (object: object | string): object is ErrorObject<string> => {
   return typeof object === 'object' && object !== null && 'errorCode' in object && 'message' in object;
 };
 
@@ -33,6 +33,30 @@ export const ERROR_CODE = dynamicRecord({
     errorCode: 'USER_NOT_FOUND',
     message: '존재하지 않는 고객입니다.',
     status: HttpStatus.NOT_FOUND,
+  },
+
+  /**
+   * 인증
+   */
+  VERIFICATION_NOT_FOUND: {
+    errorCode: 'VERIFICATION_NOT_FOUND',
+    message: '존재하지 않는 인증정보입니다.',
+    status: HttpStatus.NOT_FOUND,
+  },
+  VERIFICATION_EXCEED_MAXIMUM_COUNT: {
+    errorCode: 'VERIFICATION_EXCEED_MAXIMUM_COUNT',
+    message: '인증시도 횟수를 초과했습니다.',
+    status: HttpStatus.BAD_REQUEST,
+  },
+  VERIFICATION_EXPIRED: {
+    errorCode: 'VERIFICATION_EXPIRED',
+    message: '인증시간이 만료되었습니다.',
+    status: HttpStatus.BAD_REQUEST,
+  },
+  VERIFICATION_ALREADY_VERIFIED: {
+    errorCode: 'VERIFICATION_ALREADY_VERIFIED',
+    message: '이미 인증된 정보입니다.',
+    status: HttpStatus.BAD_REQUEST,
   },
 });
 
