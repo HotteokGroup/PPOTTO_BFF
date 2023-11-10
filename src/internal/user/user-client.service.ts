@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { ConfirmVerificationRequest, DefaultApi as UserClient, SendVerificationRequest } from '@ppotto/user-api-client';
+import {
+  ConfirmVerificationRequest,
+  CreateUserRequest,
+  DefaultApi as UserClient,
+  SendVerificationRequest,
+} from '@ppotto/user-api-client';
 import { AxiosError } from 'axios';
 
 import { UserClientException } from './user-client.exception';
@@ -21,6 +26,15 @@ export class UserClientService {
   async confirmVerification(confirmVerificationRequest: ConfirmVerificationRequest) {
     try {
       const response = await this.userClient.verificationControllerConfirmVerification(confirmVerificationRequest);
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
+  async createUser(createUserRequest: CreateUserRequest) {
+    try {
+      const response = await this.userClient.userControllerCreateUser(createUserRequest);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);

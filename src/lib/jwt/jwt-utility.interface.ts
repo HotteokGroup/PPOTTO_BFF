@@ -1,6 +1,6 @@
 export interface AuthJwtPayload {
   /** User ID */
-  id: string;
+  id: number;
 }
 
 export interface TemporaryJwtPayload {
