@@ -34,6 +34,11 @@ export const ERROR_CODE = dynamicRecord({
     message: '존재하지 않는 고객입니다.',
     status: HttpStatus.NOT_FOUND,
   },
+  USER_ALREADY_EXISTS: {
+    errorCode: 'USER_ALREADY_EXISTS',
+    message: '이미 가입된 고객입니다.',
+    status: HttpStatus.BAD_REQUEST,
+  },
 
   /**
    * 인증

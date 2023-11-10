@@ -13,11 +13,13 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { AllExceptionsFilter } from './lib/exception/all-exception.filter';
 import { ERROR_CODE } from './lib/exception/error.constant';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: `environments/.env.${process.env.NODE_ENV}` }),
     AuthModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

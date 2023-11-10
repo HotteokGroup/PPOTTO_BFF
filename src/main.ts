@@ -18,6 +18,26 @@ async function bootstrap() {
       .setTitle('PPOTTO BFF API')
       .setDescription('뽀또 BFF 서비스')
       .setVersion('1.0')
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'jwt',
+          description: '일반 JWT',
+          in: 'header',
+        },
+        'jwt',
+      )
+      .addBearerAuth(
+        {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'jwt',
+          description: '회원가입 용 임시 JWT',
+          in: 'header',
+        },
+        'temporary-jwt',
+      )
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
