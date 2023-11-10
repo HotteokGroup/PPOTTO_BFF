@@ -25,7 +25,7 @@ export class AuthService {
         throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }
 
-      const errorInfo = error.getErrorInfo();
+      const errorInfo = error.getResponse();
       switch (errorInfo.errorCode) {
         case 'USER_NOT_FOUND':
           throw new NotFoundException(ERROR_CODE.USER_NOT_FOUND);
@@ -70,7 +70,7 @@ export class AuthService {
         throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }
 
-      const errorInfo = error.getErrorInfo();
+      const errorInfo = error.getResponse();
       switch (errorInfo.errorCode) {
         case 'VERIFICATION_EXCEED_MAXIMUM_COUNT':
           throw new BadRequestException(ERROR_CODE.VERIFICATION_EXCEED_MAXIMUM_COUNT);

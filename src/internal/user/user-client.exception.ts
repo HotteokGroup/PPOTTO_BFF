@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { AxiosError } from 'axios';
 
 import { ErrorObject } from '../../lib/exception/error.constant';
 
@@ -10,12 +9,12 @@ export class UserClientException extends HttpException {
 
   private errorMessage: string;
 
-  private error: AxiosError | Error;
+  private error: Error;
 
   private errorObject: ErrorObject<string>;
 
-  constructor(errorObject: ErrorObject<string>, error: AxiosError) {
-    super(error, HttpStatus.INTERNAL_SERVER_ERROR);
+  constructor(errorObject: ErrorObject<string>, error: Error) {
+    super(errorObject, HttpStatus.INTERNAL_SERVER_ERROR);
 
     this.errorCode = errorObject.errorCode;
     this.httpStatus = errorObject.status;
@@ -40,7 +39,7 @@ export class UserClientException extends HttpException {
     return this.error;
   }
 
-  getErrorInfo(): ErrorObject<string> {
+  getResponse(): ErrorObject<string> {
     return this.errorObject;
   }
 }

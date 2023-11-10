@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfirmVerificationRequest, DefaultApi as UserClient, SendVerificationRequest } from '@ppotto/user-api-client';
 import { AxiosError } from 'axios';
 
@@ -27,12 +27,12 @@ export class UserClientService {
     }
   }
 
-  private errorHandler(error: any): UserClientException | InternalServerErrorException {
+  private errorHandler(error: any): UserClientException {
     if (error instanceof AxiosError) {
       const errorInfo = error.response?.data || ERROR_CODE.INTERNAL_SERVER_ERROR;
       return new UserClientException(errorInfo, error);
     }
 
-    return new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+    return new UserClientException(ERROR_CODE.INTERNAL_SERVER_ERROR, error);
   }
 }

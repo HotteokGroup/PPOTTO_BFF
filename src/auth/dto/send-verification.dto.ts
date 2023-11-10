@@ -5,7 +5,7 @@ import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateIf } from 'c
 import { VerificationType } from '../../internal/user/user-client.enum';
 
 export class SendVerificationRequest {
-  @ApiProperty({ description: '인증 타입', example: VerificationType.Email })
+  @ApiProperty({ description: '인증 타입', example: VerificationType.Email, enum: VerificationType })
   @IsEnum(VerificationType)
   @IsNotEmpty()
   verificationType: VerificationType;
