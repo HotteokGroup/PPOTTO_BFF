@@ -16,7 +16,7 @@ export class UserController {
 
   @ApiOperation({
     summary: '회원가입',
-    description: '회원가입을 요청합니다.',
+    description: '회원가입을 요청합니다. (temporary-jwt가 필요합니다.)',
   })
   @GenerateSwaggerDocumentByErrorCode([
     ERROR_CODE.INTERNAL_SERVER_ERROR,
