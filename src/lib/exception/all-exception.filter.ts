@@ -3,7 +3,6 @@ import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus, Logge
 import type { Response } from 'express';
 
 import { ERROR_CODE, ErrorObject, isErrorObject } from './error.constant';
-import { UserApiException } from '../../internal/user/user-api-client.exception';
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -17,20 +16,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     const { method, url } = request;
 
-    // 내부 API 예외 처리
-    if (exception instanceof UserApiException) {
-      // BFF에서 정의된 일관된 메시지 세팅
-      errorInfo.errorCode = exception.getErrorCode();
-      errorInfo.message = exception.getErrorMessage();
-      errorInfo.status = exception.getHttpStatus();
-
-      // 내부 API 에러 메시지
-      const internalErrorInfo = exception.getInternalErrorInfo();
-      Logger.error(`[${exception.name}][${method} ${url}] ${JSON.stringify(internalErrorInfo)}`);
-      Logger.error(exception.stack);
-    }
-    // BFF 내부의 에러인 경우
-    else if (exception instanceof HttpException) {
+    // 에러코드가 존재하고, 해당 에러코드가 정의된 에러코드라면 해당 에러코드로 변경
+    if (exception instanceof HttpException) {
       const errorResponse = exception.getResponse();
       if (isErrorObject(errorResponse)) {
         errorInfo.errorCode = errorResponse.errorCode;

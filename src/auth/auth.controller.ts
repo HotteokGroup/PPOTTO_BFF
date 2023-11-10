@@ -23,7 +23,7 @@ export class AuthController {
   ])
   @Post('verification')
   async sendVerification(@Body() data: SendVerificationRequest) {
-    return plainToInstance(SendVerificationResponse, this.authService.sendVerification(data));
+    return plainToInstance(SendVerificationResponse, await this.authService.sendVerification(data));
   }
 
   @ApiOperation({ summary: '인증 확인', description: '인증을 확인합니다.' })
@@ -37,6 +37,6 @@ export class AuthController {
   ])
   @Post('verification/confirm')
   async confirmVerification(@Body() data: ConfirmVerificationRequest) {
-    return plainToInstance(ConfirmVerificationResponse, this.authService.confirmVerification(data));
+    return plainToInstance(ConfirmVerificationResponse, await this.authService.confirmVerification(data));
   }
 }

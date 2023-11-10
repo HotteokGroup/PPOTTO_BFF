@@ -3,7 +3,7 @@ import { AxiosError } from 'axios';
 
 import { ErrorObject } from '../../lib/exception/error.constant';
 
-export class UserApiException extends HttpException {
+export class UserClientException extends HttpException {
   private httpStatus: HttpStatus;
 
   private errorCode: string;
@@ -12,12 +12,15 @@ export class UserApiException extends HttpException {
 
   private error: AxiosError | Error;
 
-  constructor(errorObject: ErrorObject<string>, error: AxiosError | Error) {
+  private errorObject: ErrorObject<string>;
+
+  constructor(errorObject: ErrorObject<string>, error: AxiosError) {
     super(error, HttpStatus.INTERNAL_SERVER_ERROR);
 
     this.errorCode = errorObject.errorCode;
     this.httpStatus = errorObject.status;
     this.errorMessage = errorObject.message;
+    this.errorObject = errorObject;
     this.error = error;
   }
 
@@ -37,7 +40,7 @@ export class UserApiException extends HttpException {
     return this.error;
   }
 
-  getInternalErrorInfo() {
-    return this.error instanceof AxiosError ? this.error.response?.data : this.error.message;
+  getErrorInfo(): ErrorObject<string> {
+    return this.errorObject;
   }
 }
