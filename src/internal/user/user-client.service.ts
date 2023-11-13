@@ -42,6 +42,15 @@ export class UserClientService {
     }
   }
 
+  async getTermsOfServiceList() {
+    try {
+      const response = await this.userClient.termsOfServiceControllerGetTermsOfServiceList();
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
   async loginByEmail(loginUserByEmailRequest: LoginUserByEmailRequest) {
     try {
       const response = await this.userClient.userControllerLoginByEmail(loginUserByEmailRequest);
