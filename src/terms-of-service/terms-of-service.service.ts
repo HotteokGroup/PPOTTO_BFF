@@ -1,6 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 
-import { UserClientException } from '../internal/user/user-client.exception';
 import { UserClientService } from '../internal/user/user-client.service';
 import { ERROR_CODE } from '../lib/exception/error.constant';
 
@@ -14,10 +13,6 @@ export class TermsOfServiceService {
 
       return { list };
     } catch (error) {
-      if (!(error instanceof UserClientException)) {
-        throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
-      }
-
       throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
     }
   }
