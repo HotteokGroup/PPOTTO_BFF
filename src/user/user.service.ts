@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 
-import { SignUpFromEmailParams } from './user.interface';
+import { LoginByEmailParams, SignUpFromEmailParams } from './user.interface';
 import { UserClientException } from '../internal/user/user-client.exception';
 import { UserClientService } from '../internal/user/user-client.service';
 import { ERROR_CODE } from '../lib/exception/error.constant';
@@ -29,6 +29,27 @@ export class UserService {
       switch (errorInfo.errorCode) {
         case 'USER_ALREADY_EXISTS':
           throw new BadRequestException(ERROR_CODE.USER_ALREADY_EXISTS);
+        default:
+          throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  async loginByEmail(params: LoginByEmailParams) {
+    try {
+      const { id } = await this.userClient.loginByEmail(params);
+      const accessToken = await this.jwtService.generateAuthToken({ id });
+
+      return { accessToken };
+    } catch (error) {
+      if (!(error instanceof UserClientException)) {
+        throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+
+      const errorInfo = error.getResponse();
+      switch (errorInfo.errorCode) {
+        case 'USER_NOT_FOUND':
+          throw new BadRequestException(ERROR_CODE.USER_NOT_FOUND);
         default:
           throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }

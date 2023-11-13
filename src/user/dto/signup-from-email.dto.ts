@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
-import { IsString, Length, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 
 export class SignUpFromEmailRequest {
   @ApiProperty({
@@ -12,6 +12,7 @@ export class SignUpFromEmailRequest {
   @Matches(/^[A-Za-z0-9가-힣]*$/, {
     message: '닉네임은 특수문자, 띄어쓰기, 이모지를 포함할 수 없습니다.',
   })
+  @IsNotEmpty()
   nickname: string;
 
   @ApiProperty({
@@ -23,6 +24,7 @@ export class SignUpFromEmailRequest {
   @Matches(/^(?:(?=.*[A-Z])|(?=.*[a-z])|(?=.*[^A-Za-z0-9]))(?=.*\d).+$/, {
     message: '비밀번호는 알파벳 대문자, 소문자, 특수문자 중 1가지와 숫자를 조합해야 합니다.',
   })
+  @IsNotEmpty()
   password: string;
 }
 
