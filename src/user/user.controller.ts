@@ -2,7 +2,8 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
-import { SignUpFromEmailRequest, SignUpFromEmailResponse } from './dto/signup-email.dto';
+import { LoginByEmailRequest, LoginByEmailResponse } from './dto/login-by-email.dto';
+import { SignUpFromEmailRequest, SignUpFromEmailResponse } from './dto/signup-from-email.dto';
 import { UserService } from './user.service';
 import { ERROR_CODE, GenerateSwaggerDocumentByErrorCode } from '../lib/exception/error.constant';
 import { TemporaryUserAuth } from '../lib/jwt/decorators/temporary-jwt.decorator';
@@ -35,5 +36,19 @@ export class UserController {
         password: data.password,
       }),
     );
+  }
+
+  @ApiOperation({
+    summary: '이메일 로그인',
+    description: '이메일과 비밀번호로 로그인합니다.',
+  })
+  @GenerateSwaggerDocumentByErrorCode([
+    ERROR_CODE.INTERNAL_SERVER_ERROR,
+    ERROR_CODE.INVALID_DATA,
+    ERROR_CODE.USER_NOT_FOUND,
+  ])
+  @Post('login-by-email')
+  async loginByEmail(@Body() data: LoginByEmailRequest) {
+    return plainToInstance(LoginByEmailResponse, await this.userService.loginByEmail(data));
   }
 }

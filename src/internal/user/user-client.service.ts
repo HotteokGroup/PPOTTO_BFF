@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   ConfirmVerificationRequest,
   CreateUserRequest,
+  LoginUserByEmailRequest,
   DefaultApi as UserClient,
   SendVerificationRequest,
 } from '@ppotto/user-api-client';
@@ -35,6 +36,15 @@ export class UserClientService {
   async createUser(createUserRequest: CreateUserRequest) {
     try {
       const response = await this.userClient.userControllerCreateUser(createUserRequest);
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
+  async loginByEmail(loginUserByEmailRequest: LoginUserByEmailRequest) {
+    try {
+      const response = await this.userClient.userControllerLoginByEmail(loginUserByEmailRequest);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);
