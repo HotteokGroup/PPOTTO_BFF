@@ -5,6 +5,7 @@ import {
   LoginUserByEmailRequest,
   DefaultApi as UserClient,
   SendVerificationRequest,
+  AgreeTermsOfServiceRequest,
 } from '@ppotto/user-api-client';
 import { AxiosError } from 'axios';
 
@@ -45,6 +46,24 @@ export class UserClientService {
   async getTermsOfServiceList() {
     try {
       const response = await this.userClient.termsOfServiceControllerGetTermsOfServiceList();
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
+  async agreeTermsOfService(agreeTermsOfServiceRequest: AgreeTermsOfServiceRequest) {
+    try {
+      const response = await this.userClient.termsOfServiceControllerAgreeTermsOfService(agreeTermsOfServiceRequest);
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
+  async getUserInfo(userId: number) {
+    try {
+      const response = await this.userClient.userControllerGetUserInfo(userId);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);

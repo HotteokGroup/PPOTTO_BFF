@@ -5,7 +5,7 @@ import { AuthJwtPayload } from '../jwt-utility.interface';
 export const UserInfo = createParamDecorator((_: unknown, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest<Request & { user: AuthJwtPayload }>();
   const payload = request.user;
-  return { user: payload?.id ?? null };
+  return { ...(payload ?? null) };
 });
 
 /**

@@ -63,6 +63,20 @@ export const ERROR_CODE = dynamicRecord({
     message: '이미 인증된 정보입니다.',
     status: HttpStatus.BAD_REQUEST,
   },
+
+  /**
+   * 약관
+   */
+  TERMS_OF_SERVICE_NOT_FOUND: {
+    errorCode: 'TERMS_OF_SERVICE_NOT_FOUND',
+    message: '존재하지 않는 약관입니다.',
+    status: HttpStatus.NOT_FOUND,
+  },
+  TERMS_OF_SERVICE_ALREADY_AGREE: {
+    errorCode: 'TERMS_OF_SERVICE_ALREADY_AGREE',
+    message: '이미 동의한 약관 정보입니다.',
+    status: HttpStatus.BAD_REQUEST,
+  },
 });
 
 // 스웨거 Exception Description을 위한 데코레이터
