@@ -2,18 +2,18 @@ import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundE
 import { GetSharedAlbumMemberItem } from '@ppotto/social-api-client';
 
 import { CreateShareAlbumParams, GetShareAlbumParams, ModifyShareAlbumParams } from './share-album.interface';
-import { ShareAlbumMemberRole, shareAlbumMemberRoleLevels } from '../internal/social/social-client.enum';
-import { SocialClientException } from '../internal/social/social-client.exception';
-import { SocialClientService } from '../internal/social/social-client.service';
+import { ShareAlbumClient } from '../internal/social/share-album/share-album.client';
+import { ShareAlbumMemberRole } from '../internal/social/share-album/share-album.enum';
+import { SocialClientException } from '../internal/social/social.exception';
 import { ERROR_CODE } from '../lib/exception/error.constant';
 
 @Injectable()
 export class ShareAlbumService {
-  constructor(private readonly socialClient: SocialClientService) {}
+  constructor(private readonly shareAlbumClient: ShareAlbumClient) {}
 
   async createShareAlbum(params: CreateShareAlbumParams) {
     try {
-      const { id } = await this.socialClient.createShareAlbum(params);
+      const { id } = await this.shareAlbumClient.create(params);
 
       return { id };
     } catch (error) {
@@ -38,7 +38,7 @@ export class ShareAlbumService {
 
   private async findShareAlbum(id: string) {
     try {
-      const shareAlbum = await this.socialClient.getShareAlbum(id);
+      const shareAlbum = await this.shareAlbumClient.get(id);
 
       return shareAlbum;
     } catch (error) {
@@ -64,7 +64,7 @@ export class ShareAlbumService {
       throw new ForbiddenException(ERROR_CODE.SHARE_ALBUM_INSUFFICIENT_PERMISSION);
     }
 
-    const shareAlbumId = await this.socialClient.modifyShareAlbum(id, { name, bio }).catch(() => {
+    const shareAlbumId = await this.shareAlbumClient.modify(id, { name, bio }).catch(() => {
       throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
     });
 
@@ -74,12 +74,12 @@ export class ShareAlbumService {
   }
 
   private canUserViewShareAlbum(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
-    const viewerRoleLevel = shareAlbumMemberRoleLevels[ShareAlbumMemberRole.Viewer];
+    const viewerRoleLevel = ShareAlbumMemberRole.VIEWER;
     return this.canUserPerformAction(shareAlbumMembers, userId, viewerRoleLevel);
   }
 
   private canUserModifyShareAlbum(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
-    const ownerRoleLevel = shareAlbumMemberRoleLevels[ShareAlbumMemberRole.Owner];
+    const ownerRoleLevel = ShareAlbumMemberRole.OWNER;
     return this.canUserPerformAction(shareAlbumMembers, userId, ownerRoleLevel);
   }
 
@@ -93,7 +93,7 @@ export class ShareAlbumService {
     // 앨범 그룹원이 아닌 경우 작업 불가능
     if (!member) return false;
 
-    const userRoleLevel = shareAlbumMemberRoleLevels[member.role];
+    const userRoleLevel = ShareAlbumMemberRole[member.role];
     return userRoleLevel >= requiredRoleLevel;
   }
 }

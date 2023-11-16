@@ -40,7 +40,7 @@
     "@nestjs/jwt": "^10.1.1",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.11",
-    "@ppotto/social-api-client": "^0.0.8",
+    "@ppotto/social-api-client": "^0.0.9",
     "@ppotto/user-api-client": "^0.0.5",
     "axios": "^1.6.0",
     "class-transformer": "^0.5.1",

@@ -24,8 +24,8 @@ export interface ModifyShareAlbumParams {
   userId: number;
 
   /** 공유앨범 명 */
-  name: string;
+  name?: string;
 
   /** 공유앨범 설명 */
-  bio: string;
+  bio?: string;
 }

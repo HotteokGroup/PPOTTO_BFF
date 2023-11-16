@@ -3,7 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Configuration, DefaultApi as SocialClient } from '@ppotto/social-api-client';
 
-import { SocialClientService } from './social-client.service';
+import { ShareAlbumClient } from './share-album/share-album.client';
 
 @Module({
   imports: [HttpModule],
@@ -17,8 +17,8 @@ import { SocialClientService } from './social-client.service';
       },
       inject: [HttpService, ConfigService],
     },
-    SocialClientService,
+    ShareAlbumClient,
   ],
-  exports: [SocialClientService, SocialClient],
+  exports: [ShareAlbumClient, SocialClient],
 })
 export class SocialClientModule {}

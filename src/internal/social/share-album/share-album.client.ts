@@ -6,14 +6,14 @@ import {
 } from '@ppotto/social-api-client';
 import { AxiosError } from 'axios';
 
-import { SocialClientException } from './social-client.exception';
-import { ERROR_CODE } from '../../lib/exception/error.constant';
+import { ERROR_CODE } from '../../../lib/exception/error.constant';
+import { SocialClientException } from '../social.exception';
 
 @Injectable()
-export class SocialClientService {
+export class ShareAlbumClient {
   constructor(private readonly socialClient: SocialClient) {}
 
-  async createShareAlbum(createShareAlbumRequest: CreateShareAlbumRequest) {
+  async create(createShareAlbumRequest: CreateShareAlbumRequest) {
     try {
       const response = await this.socialClient.shareAlbumControllerCreateShareAlbum(createShareAlbumRequest);
       return response.data;
@@ -22,7 +22,7 @@ export class SocialClientService {
     }
   }
 
-  async getShareAlbum(id: string) {
+  async get(id: string) {
     try {
       const response = await this.socialClient.shareAlbumControllerGetShareAlbum(id);
       return response.data;
@@ -31,7 +31,7 @@ export class SocialClientService {
     }
   }
 
-  async modifyShareAlbum(id: string, modifyShareAlbumRequest: ModifyShareAlbumRequest) {
+  async modify(id: string, modifyShareAlbumRequest: ModifyShareAlbumRequest) {
     try {
       const response = await this.socialClient.shareAlbumControllerModifyShareAlbum(id, modifyShareAlbumRequest);
       return response.data;

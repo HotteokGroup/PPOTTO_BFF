@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
 import { CreateShareAlbumRequest, CreateShareAlbumResponse } from './dto/create-share-album.dto';
@@ -12,6 +12,7 @@ import { AuthJwtGuard } from '../lib/jwt/guards/auth-jwt.guard';
 import { AuthJwtPayload } from '../lib/jwt/jwt-utility.interface';
 
 @Controller('share-album')
+@ApiTags('앨범')
 export class ShareAlbumController {
   constructor(private readonly shareAlbumService: ShareAlbumService) {}
 
