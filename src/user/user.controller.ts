@@ -1,14 +1,17 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
+import { GetUserInfoResponse } from './dto/get-user-info.dto';
 import { LoginByEmailRequest, LoginByEmailResponse } from './dto/login-by-email.dto';
 import { SignUpFromEmailRequest, SignUpFromEmailResponse } from './dto/signup-from-email.dto';
 import { UserService } from './user.service';
 import { ERROR_CODE, GenerateSwaggerDocumentByErrorCode } from '../lib/exception/error.constant';
+import { UserInfo } from '../lib/jwt/decorators/auth-jwt.decorator';
 import { TemporaryUserAuth } from '../lib/jwt/decorators/temporary-jwt.decorator';
+import { AuthJwtGuard } from '../lib/jwt/guards/auth-jwt.guard';
 import { TemporaryJwtGuard } from '../lib/jwt/guards/temporary-jwt.guard';
-import { TemporaryJwtPayload } from '../lib/jwt/jwt-utility.interface';
+import { AuthJwtPayload, TemporaryJwtPayload } from '../lib/jwt/jwt-utility.interface';
 
 @Controller()
 @ApiTags('유저')
@@ -50,5 +53,21 @@ export class UserController {
   @Post('login-by-email')
   async loginByEmail(@Body() data: LoginByEmailRequest) {
     return plainToInstance(LoginByEmailResponse, await this.userService.loginByEmail(data));
+  }
+
+  @ApiOperation({
+    summary: '유저 정보 & 약관 동의 정보 조회',
+    description: '유저 정보 & 약관 동의 정보를 조회합니다.',
+  })
+  @GenerateSwaggerDocumentByErrorCode([
+    ERROR_CODE.INTERNAL_SERVER_ERROR,
+    ERROR_CODE.INVALID_DATA,
+    ERROR_CODE.USER_NOT_FOUND,
+  ])
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthJwtGuard)
+  @Get('user')
+  async getUserInfo(@UserInfo() user: AuthJwtPayload) {
+    return plainToInstance(GetUserInfoResponse, await this.userService.getUserInfo(user.id));
   }
 }

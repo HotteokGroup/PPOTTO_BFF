@@ -39,6 +39,11 @@ export const ERROR_CODE = dynamicRecord({
     message: '이미 가입된 고객입니다.',
     status: HttpStatus.BAD_REQUEST,
   },
+  USER_WITHDRAWAL: {
+    errorCode: 'USER_WITHDRAWAL',
+    message: '탈퇴한 고객입니다.',
+    status: HttpStatus.FORBIDDEN,
+  },
 
   /**
    * 인증
@@ -61,6 +66,20 @@ export const ERROR_CODE = dynamicRecord({
   VERIFICATION_ALREADY_VERIFIED: {
     errorCode: 'VERIFICATION_ALREADY_VERIFIED',
     message: '이미 인증된 정보입니다.',
+    status: HttpStatus.BAD_REQUEST,
+  },
+
+  /**
+   * 약관
+   */
+  TERMS_OF_SERVICE_NOT_FOUND: {
+    errorCode: 'TERMS_OF_SERVICE_NOT_FOUND',
+    message: '존재하지 않는 약관입니다.',
+    status: HttpStatus.NOT_FOUND,
+  },
+  TERMS_OF_SERVICE_ALREADY_AGREE: {
+    errorCode: 'TERMS_OF_SERVICE_ALREADY_AGREE',
+    message: '이미 동의한 약관 정보입니다.',
     status: HttpStatus.BAD_REQUEST,
   },
 });
