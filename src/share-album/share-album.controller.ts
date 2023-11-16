@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
 import { CreateShareAlbumRequest, CreateShareAlbumResponse } from './dto/create-share-album.dto';
-import { GetSharedAlbumResponse } from './dto/get-share-album.dto';
+import { GetShareAlbumResponse } from './dto/get-share-album.dto';
+import { ModifyShareAlbumRequest, ModifyShareAlbumResponse } from './dto/modify-share-album.dto';
 import { ShareAlbumService } from './share-album.service';
 import { ERROR_CODE, GenerateSwaggerDocumentByErrorCode } from '../lib/exception/error.constant';
 import { UserInfo } from '../lib/jwt/decorators/auth-jwt.decorator';
@@ -48,10 +49,39 @@ export class ShareAlbumController {
   @Get(':id')
   async getSharedAlbum(@Param('id') id: string, @UserInfo() user: AuthJwtPayload) {
     return plainToInstance(
-      GetSharedAlbumResponse,
-      await this.shareAlbumService.getSharedAlbum({
+      GetShareAlbumResponse,
+      await this.shareAlbumService.getShareAlbum({
         id,
         userId: user.id,
+      }),
+    );
+  }
+
+  @ApiOperation({
+    summary: '공유앨범 수정',
+    description: '공유앨범을 수정합니다.',
+  })
+  @GenerateSwaggerDocumentByErrorCode([
+    ERROR_CODE.INTERNAL_SERVER_ERROR,
+    ERROR_CODE.INVALID_DATA,
+    ERROR_CODE.SHARE_ALBUM_NOT_FOUND,
+    ERROR_CODE.SHARE_ALBUM_INSUFFICIENT_PERMISSION,
+  ])
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthJwtGuard)
+  @Patch(':id')
+  async modifyShareAlbum(
+    @Param('id') id: string,
+    @UserInfo() user: AuthJwtPayload,
+    @Body() data: ModifyShareAlbumRequest,
+  ) {
+    return plainToInstance(
+      ModifyShareAlbumResponse,
+      await this.shareAlbumService.modifyShareAlbum({
+        id,
+        userId: user.id,
+        name: data.name,
+        bio: data.bio,
       }),
     );
   }

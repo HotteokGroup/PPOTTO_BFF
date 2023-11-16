@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { GetSharedAlbumMemberItem } from '@ppotto/social-api-client';
 
-import { CreateShareAlbumParams, GetSharedAlbumParams } from './share-album.interface';
+import { CreateShareAlbumParams, GetShareAlbumParams, ModifyShareAlbumParams } from './share-album.interface';
 import { ShareAlbumMemberRole, shareAlbumMemberRoleLevels } from '../internal/social/social-client.enum';
 import { SocialClientException } from '../internal/social/social-client.exception';
 import { SocialClientService } from '../internal/social/social-client.service';
@@ -21,9 +21,27 @@ export class ShareAlbumService {
     }
   }
 
-  async getSharedAlbum(params: GetSharedAlbumParams) {
+  async getShareAlbum(params: GetShareAlbumParams) {
     const { id, userId } = params;
-    const sharedAlbum = await this.socialClient.getSharedAlbum(id).catch((error) => {
+    const shareAlbum = await this.findShareAlbum(id);
+
+    if (!this.canUserViewShareAlbum(shareAlbum.shareAlbumMemberList, userId)) {
+      throw new ForbiddenException(ERROR_CODE.SHARE_ALBUM_INSUFFICIENT_PERMISSION);
+    }
+
+    return {
+      id: shareAlbum.id,
+      name: shareAlbum.name,
+      bio: shareAlbum.bio,
+    };
+  }
+
+  private async findShareAlbum(id: string) {
+    try {
+      const shareAlbum = await this.socialClient.getShareAlbum(id);
+
+      return shareAlbum;
+    } catch (error) {
       if (!(error instanceof SocialClientException)) {
         throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }
@@ -35,27 +53,47 @@ export class ShareAlbumService {
         default:
           throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }
-    });
+    }
+  }
 
-    if (!this.canUserViewShareAlbum(sharedAlbum.shareAlbumMemberList, userId)) {
+  async modifyShareAlbum(params: ModifyShareAlbumParams) {
+    const { id, userId, name, bio } = params;
+    const shareAlbum = await this.findShareAlbum(id);
+
+    if (!this.canUserModifyShareAlbum(shareAlbum.shareAlbumMemberList, userId)) {
       throw new ForbiddenException(ERROR_CODE.SHARE_ALBUM_INSUFFICIENT_PERMISSION);
     }
 
+    const shareAlbumId = await this.socialClient.modifyShareAlbum(id, { name, bio }).catch(() => {
+      throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+    });
+
     return {
-      id: sharedAlbum.id,
-      name: sharedAlbum.name,
-      bio: sharedAlbum.bio,
+      id: shareAlbumId,
     };
   }
 
   private canUserViewShareAlbum(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
+    const viewerRoleLevel = shareAlbumMemberRoleLevels[ShareAlbumMemberRole.Viewer];
+    return this.canUserPerformAction(shareAlbumMembers, userId, viewerRoleLevel);
+  }
+
+  private canUserModifyShareAlbum(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
+    const ownerRoleLevel = shareAlbumMemberRoleLevels[ShareAlbumMemberRole.Owner];
+    return this.canUserPerformAction(shareAlbumMembers, userId, ownerRoleLevel);
+  }
+
+  private canUserPerformAction(
+    shareAlbumMembers: GetSharedAlbumMemberItem[],
+    userId: number,
+    requiredRoleLevel: number,
+  ): boolean {
     const member = shareAlbumMembers.find((shareAlbumMember) => shareAlbumMember.userId === userId);
 
-    // 앨범 그룹원이 아닌 경우 조회 불가능
+    // 앨범 그룹원이 아닌 경우 작업 불가능
     if (!member) return false;
 
     const userRoleLevel = shareAlbumMemberRoleLevels[member.role];
-    const viewerRoleLevel = shareAlbumMemberRoleLevels[ShareAlbumMemberRole.Viewer];
-    return userRoleLevel >= viewerRoleLevel;
+    return userRoleLevel >= requiredRoleLevel;
   }
 }

@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateShareAlbumRequest, DefaultApi as SocialClient } from '@ppotto/social-api-client';
+import {
+  CreateShareAlbumRequest,
+  DefaultApi as SocialClient,
+  ModifyShareAlbumRequest,
+} from '@ppotto/social-api-client';
 import { AxiosError } from 'axios';
 
 import { SocialClientException } from './social-client.exception';
@@ -18,9 +22,18 @@ export class SocialClientService {
     }
   }
 
-  async getSharedAlbum(id: string) {
+  async getShareAlbum(id: string) {
     try {
       const response = await this.socialClient.shareAlbumControllerGetShareAlbum(id);
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
+  async modifyShareAlbum(id: string, modifyShareAlbumRequest: ModifyShareAlbumRequest) {
+    try {
+      const response = await this.socialClient.shareAlbumControllerModifyShareAlbum(id, modifyShareAlbumRequest);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);
