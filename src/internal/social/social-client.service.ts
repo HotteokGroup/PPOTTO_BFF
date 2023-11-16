@@ -18,6 +18,15 @@ export class SocialClientService {
     }
   }
 
+  async getSharedAlbum(id: string) {
+    try {
+      const response = await this.socialClient.shareAlbumControllerGetShareAlbum(id);
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
   private errorHandler(error: any): SocialClientException {
     if (error instanceof AxiosError) {
       const errorInfo = error.response?.data || ERROR_CODE.INTERNAL_SERVER_ERROR;
