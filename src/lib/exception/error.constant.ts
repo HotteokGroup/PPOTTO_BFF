@@ -39,6 +39,11 @@ export const ERROR_CODE = dynamicRecord({
     message: '이미 가입된 고객입니다.',
     status: HttpStatus.BAD_REQUEST,
   },
+  USER_WITHDRAWAL: {
+    errorCode: 'USER_WITHDRAWAL',
+    message: '탈퇴한 고객입니다.',
+    status: HttpStatus.FORBIDDEN,
+  },
 
   /**
    * 인증

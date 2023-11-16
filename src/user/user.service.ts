@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { LoginByEmailParams, SignUpFromEmailParams } from './user.interface';
 import { UserClientException } from '../internal/user/user-client.exception';
@@ -54,5 +54,31 @@ export class UserService {
           throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }
     }
+  }
+
+  async getUserInfo(userId: number) {
+    const user = await this.userClient.getUserInfo(userId).catch((error) => {
+      if (!(error instanceof UserClientException)) {
+        throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+
+      const errorInfo = error.getResponse();
+      switch (errorInfo.errorCode) {
+        case 'USER_NOT_FOUND':
+          throw new BadRequestException(ERROR_CODE.USER_NOT_FOUND);
+        default:
+          throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+    });
+
+    if (!user) {
+      throw new BadRequestException(ERROR_CODE.USER_NOT_FOUND);
+    }
+
+    if (user.deletedAt) {
+      throw new ForbiddenException(ERROR_CODE.USER_WITHDRAWAL);
+    }
+
+    return user;
   }
 }
