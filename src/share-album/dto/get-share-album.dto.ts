@@ -12,6 +12,6 @@ export class GetShareAlbumResponse {
   name: string;
 
   @Expose()
-  @ApiProperty({ description: '앨범 소개', example: '나의 공유앨범 소개' })
+  @ApiProperty({ description: '앨범 소개', example: '나의 공유앨범 소개', nullable: true })
   bio: string;
 }

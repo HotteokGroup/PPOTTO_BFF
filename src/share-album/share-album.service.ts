@@ -11,7 +11,10 @@ import { ERROR_CODE } from '../lib/exception/error.constant';
 export class ShareAlbumService {
   constructor(private readonly shareAlbumClient: ShareAlbumClient) {}
 
-  async createShareAlbum(params: CreateShareAlbumParams) {
+  /**
+   * 공유앨범 생성
+   */
+  async create(params: CreateShareAlbumParams) {
     try {
       const { id } = await this.shareAlbumClient.create(params);
 
@@ -21,11 +24,14 @@ export class ShareAlbumService {
     }
   }
 
-  async getShareAlbum(params: GetShareAlbumParams) {
+  /**
+   * 공유앨범 조회 및 권한 확인
+   */
+  async get(params: GetShareAlbumParams) {
     const { id, userId } = params;
-    const shareAlbum = await this.findShareAlbum(id);
+    const shareAlbum = await this.find(id);
 
-    if (!this.canUserViewShareAlbum(shareAlbum.shareAlbumMemberList, userId)) {
+    if (!this.canUserView(shareAlbum.shareAlbumMemberList, userId)) {
       throw new ForbiddenException(ERROR_CODE.SHARE_ALBUM_INSUFFICIENT_PERMISSION);
     }
 
@@ -36,7 +42,10 @@ export class ShareAlbumService {
     };
   }
 
-  private async findShareAlbum(id: string) {
+  /**
+   * 공유앨범 조회
+   */
+  private async find(id: string) {
     try {
       const shareAlbum = await this.shareAlbumClient.get(id);
 
@@ -56,11 +65,14 @@ export class ShareAlbumService {
     }
   }
 
-  async modifyShareAlbum(params: ModifyShareAlbumParams) {
+  /**
+   * 공유앨범 수정
+   */
+  async modify(params: ModifyShareAlbumParams) {
     const { id, userId, name, bio } = params;
-    const shareAlbum = await this.findShareAlbum(id);
+    const shareAlbum = await this.find(id);
 
-    if (!this.canUserModifyShareAlbum(shareAlbum.shareAlbumMemberList, userId)) {
+    if (!this.canUserModify(shareAlbum.shareAlbumMemberList, userId)) {
       throw new ForbiddenException(ERROR_CODE.SHARE_ALBUM_INSUFFICIENT_PERMISSION);
     }
 
@@ -73,12 +85,12 @@ export class ShareAlbumService {
     };
   }
 
-  private canUserViewShareAlbum(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
+  private canUserView(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
     const viewerRoleLevel = ShareAlbumMemberRole.VIEWER;
     return this.canUserPerformAction(shareAlbumMembers, userId, viewerRoleLevel);
   }
 
-  private canUserModifyShareAlbum(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
+  private canUserModify(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
     const ownerRoleLevel = ShareAlbumMemberRole.OWNER;
     return this.canUserPerformAction(shareAlbumMembers, userId, ownerRoleLevel);
   }

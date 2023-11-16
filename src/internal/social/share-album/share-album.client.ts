@@ -13,6 +13,9 @@ import { SocialClientException } from '../social.exception';
 export class ShareAlbumClient {
   constructor(private readonly socialClient: SocialClient) {}
 
+  /**
+   * 공유앨범 생성
+   */
   async create(createShareAlbumRequest: CreateShareAlbumRequest) {
     try {
       const response = await this.socialClient.shareAlbumControllerCreateShareAlbum(createShareAlbumRequest);
@@ -22,6 +25,9 @@ export class ShareAlbumClient {
     }
   }
 
+  /**
+   * 공유앨범 조회
+   */
   async get(id: string) {
     try {
       const response = await this.socialClient.shareAlbumControllerGetShareAlbum(id);
@@ -31,6 +37,9 @@ export class ShareAlbumClient {
     }
   }
 
+  /**
+   * 공유앨범 수정
+   */
   async modify(id: string, modifyShareAlbumRequest: ModifyShareAlbumRequest) {
     try {
       const response = await this.socialClient.shareAlbumControllerModifyShareAlbum(id, modifyShareAlbumRequest);

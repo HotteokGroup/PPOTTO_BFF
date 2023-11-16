@@ -3,7 +3,7 @@ export interface CreateShareAlbumParams {
   name: string;
 
   /** 공유앨범 설명 */
-  bio: string;
+  bio?: string;
 
   /** 공유앨범 생성자의 ID */
   ownerId: number;

@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
 import { CreateShareAlbumRequest, CreateShareAlbumResponse } from './dto/create-share-album.dto';
@@ -27,7 +27,7 @@ export class ShareAlbumController {
   async createShareAlbum(@UserInfo() user: AuthJwtPayload, @Body() data: CreateShareAlbumRequest) {
     return plainToInstance(
       CreateShareAlbumResponse,
-      await this.shareAlbumService.createShareAlbum({
+      await this.shareAlbumService.create({
         name: data.name,
         bio: data.bio,
         ownerId: user.id,
@@ -38,6 +38,11 @@ export class ShareAlbumController {
   @ApiOperation({
     summary: '공유앨범 조회',
     description: '공유앨범을 조회합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '공유앨범 ID',
+    example: 'cln3cu8oc00003cwtl5g5fp46',
   })
   @GenerateSwaggerDocumentByErrorCode([
     ERROR_CODE.INTERNAL_SERVER_ERROR,
@@ -51,7 +56,7 @@ export class ShareAlbumController {
   async getSharedAlbum(@Param('id') id: string, @UserInfo() user: AuthJwtPayload) {
     return plainToInstance(
       GetShareAlbumResponse,
-      await this.shareAlbumService.getShareAlbum({
+      await this.shareAlbumService.get({
         id,
         userId: user.id,
       }),
@@ -78,7 +83,7 @@ export class ShareAlbumController {
   ) {
     return plainToInstance(
       ModifyShareAlbumResponse,
-      await this.shareAlbumService.modifyShareAlbum({
+      await this.shareAlbumService.modify({
         id,
         userId: user.id,
         name: data.name,
