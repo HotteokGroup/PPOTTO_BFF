@@ -1,5 +1,10 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+} from '@nestjs/swagger';
 
 export interface ErrorObject<T> {
   errorCode: T;
@@ -82,6 +87,24 @@ export const ERROR_CODE = dynamicRecord({
     message: '이미 동의한 약관 정보입니다.',
     status: HttpStatus.BAD_REQUEST,
   },
+
+  /**
+   * 앨범
+   */
+  SHARE_ALBUM_NOT_FOUND: {
+    errorCode: 'SHARE_ALBUM_NOT_FOUND',
+    message: '앨범을 찾을 수 없습니다.',
+    status: HttpStatus.NOT_FOUND,
+  },
+
+  /**
+   * 앨범 권한
+   */
+  SHARE_ALBUM_INSUFFICIENT_PERMISSION: {
+    errorCode: 'SHARE_ALBUM_INSUFFICIENT_PERMISSION',
+    message: '앨범에 접근할 권한이 부족합니다.',
+    status: HttpStatus.FORBIDDEN,
+  },
 });
 
 // 스웨거 Exception Description을 위한 데코레이터
@@ -94,6 +117,10 @@ export const GenerateSwaggerDocumentByErrorCode = (errorList: ErrorObject<string
     .filter((error) => error.status === HttpStatus.NOT_FOUND)
     .map((error) => `${error.errorCode}: ${error.message}`)
     .join('</br>');
+  const forbidden = errorList
+    .filter((error) => error.status === HttpStatus.FORBIDDEN)
+    .map((error) => `${error.errorCode}: ${error.message}`)
+    .join('</br>');
   const internalServerError = errorList
     .filter((error) => error.status === HttpStatus.INTERNAL_SERVER_ERROR)
     .map((error) => `${error.errorCode}: ${error.message}`)
@@ -101,6 +128,7 @@ export const GenerateSwaggerDocumentByErrorCode = (errorList: ErrorObject<string
 
   return applyDecorators(
     ApiBadRequestResponse({ description: badRequest }),
+    ApiForbiddenResponse({ description: forbidden }),
     ApiNotFoundResponse({ description: notFound }),
     ApiInternalServerErrorResponse({ description: internalServerError }),
   );

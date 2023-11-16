@@ -13,6 +13,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { AllExceptionsFilter } from './lib/exception/all-exception.filter';
 import { ERROR_CODE } from './lib/exception/error.constant';
+import { ShareAlbumModule } from './share-album/share-album.module';
 import { TermsOfServiceModule } from './terms-of-service/terms-of-service.module';
 import { UserModule } from './user/user.module';
 
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
     AuthModule,
     UserModule,
     TermsOfServiceModule,
+    ShareAlbumModule,
   ],
   controllers: [AppController],
   providers: [
