@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import {
   CreateShareAlbumRequest,
   DefaultApi as SocialClient,
+  JoinShareAlbumByInviteCodeRequest,
   ModifyShareAlbumRequest,
 } from '@ppotto/social-api-client';
 import { AxiosError } from 'axios';
@@ -55,6 +56,21 @@ export class ShareAlbumClient {
   async createInviteCode(id: string) {
     try {
       const response = await this.socialClient.shareAlbumControllerCreateShareAlbumInviteCode(id);
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
+  /**
+   * 초대코드로 공유앨범 가입
+   */
+  async joinByInviteCode(code: string, joinShareAlbumByInviteCodeRequest: JoinShareAlbumByInviteCodeRequest) {
+    try {
+      const response = await this.socialClient.shareAlbumControllerJoinShareAlbumByInviteCode(
+        code,
+        joinShareAlbumByInviteCodeRequest,
+      );
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);

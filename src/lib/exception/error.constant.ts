@@ -96,6 +96,16 @@ export const ERROR_CODE = dynamicRecord({
     message: '앨범을 찾을 수 없습니다.',
     status: HttpStatus.NOT_FOUND,
   },
+  SHARE_ALBUM_INVITE_CODE_NOT_FOUND: {
+    errorCode: 'SHARE_ALBUM_INVITE_CODE_NOT_FOUND',
+    message: '초대코드를 찾을 수 없습니다.',
+    status: HttpStatus.NOT_FOUND,
+  },
+  SHARE_ALBUM_MEMBER_ALREADY_JOINED: {
+    errorCode: 'SHARE_ALBUM_MEMBER_ALREADY_JOINED',
+    message: '이미 가입된 멤버입니다.',
+    status: HttpStatus.NOT_FOUND,
+  },
 
   /**
    * 앨범 권한

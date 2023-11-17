@@ -37,3 +37,11 @@ export interface CreateInviteCodeParams {
   /** 초대코드를 생성하려는 유저 ID */
   userId: number;
 }
+
+export interface JoinByInviteCodeParams {
+  /** 공유앨범에 가입하려는 유저 ID */
+  userId: number;
+
+  /** 초대코드 */
+  code: string;
+}

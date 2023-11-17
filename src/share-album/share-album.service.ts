@@ -1,10 +1,17 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { GetSharedAlbumMemberItem } from '@ppotto/social-api-client';
 
 import {
   CreateInviteCodeParams,
   CreateShareAlbumParams,
   GetShareAlbumParams,
+  JoinByInviteCodeParams,
   ModifyShareAlbumParams,
 } from './share-album.interface';
 import { ShareAlbumClient } from '../internal/social/share-album/share-album.client';
@@ -116,6 +123,37 @@ export class ShareAlbumService {
       switch (errorInfo.errorCode) {
         case 'SHARE_ALBUM_NOT_FOUND':
           throw new NotFoundException(ERROR_CODE.SHARE_ALBUM_NOT_FOUND);
+        default:
+          throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
+  /**
+   * 초대코드로 공유앨범에 가입합니다.
+   */
+  async joinByInviteCode(params: JoinByInviteCodeParams) {
+    const { userId, code } = params;
+
+    try {
+      const { shareAlbumId } = await this.shareAlbumClient.joinByInviteCode(code, {
+        userId,
+      });
+
+      return {
+        shareAlbumId,
+      };
+    } catch (error) {
+      if (!(error instanceof SocialClientException)) {
+        throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+
+      const errorInfo = error.getResponse();
+      switch (errorInfo.errorCode) {
+        case 'SHARE_ALBUM_INVITE_CODE_NOT_FOUND':
+          throw new NotFoundException(ERROR_CODE.SHARE_ALBUM_INVITE_CODE_NOT_FOUND);
+        case 'SHARE_ALBUM_MEMBER_ALREADY_JOINED':
+          throw new BadRequestException(ERROR_CODE.SHARE_ALBUM_MEMBER_ALREADY_JOINED);
         default:
           throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }
