@@ -29,3 +29,11 @@ export interface ModifyShareAlbumParams {
   /** 공유앨범 설명 */
   bio?: string;
 }
+
+export interface CreateInviteCodeParams {
+  /** 공유앨범 ID */
+  id: string;
+
+  /** 초대코드를 생성하려는 유저 ID */
+  userId: number;
+}

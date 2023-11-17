@@ -2,6 +2,7 @@ import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/co
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
+import { CreateInviteCodeForShareAlbumResponse } from './dto/create-invite-code-for-share-album.dto';
 import { CreateShareAlbumRequest, CreateShareAlbumResponse } from './dto/create-share-album.dto';
 import { GetShareAlbumResponse } from './dto/get-share-album.dto';
 import { ModifyShareAlbumRequest, ModifyShareAlbumResponse } from './dto/modify-share-album.dto';
@@ -88,6 +89,34 @@ export class ShareAlbumController {
         userId: user.id,
         name: data.name,
         bio: data.bio,
+      }),
+    );
+  }
+
+  @ApiOperation({
+    summary: '공유앨범 초대코드 생성',
+    description: '공유앨범 초대코드를 생성합니다.',
+  })
+  @ApiParam({
+    name: 'id',
+    description: '공유앨범 ID',
+    example: 'cln3cu8oc00003cwtl5g5fp46',
+  })
+  @GenerateSwaggerDocumentByErrorCode([
+    ERROR_CODE.INTERNAL_SERVER_ERROR,
+    ERROR_CODE.INVALID_DATA,
+    ERROR_CODE.SHARE_ALBUM_NOT_FOUND,
+    ERROR_CODE.SHARE_ALBUM_INSUFFICIENT_PERMISSION,
+  ])
+  @ApiBearerAuth('jwt')
+  @UseGuards(AuthJwtGuard)
+  @Post(':id/invite-code')
+  async createInviteCodeForShareAlbum(@Param('id') id: string, @UserInfo() user: AuthJwtPayload) {
+    return plainToInstance(
+      CreateInviteCodeForShareAlbumResponse,
+      await this.shareAlbumService.createInviteCode({
+        id,
+        userId: user.id,
       }),
     );
   }

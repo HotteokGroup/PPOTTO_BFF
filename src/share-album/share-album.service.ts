@@ -1,7 +1,12 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { GetSharedAlbumMemberItem } from '@ppotto/social-api-client';
 
-import { CreateShareAlbumParams, GetShareAlbumParams, ModifyShareAlbumParams } from './share-album.interface';
+import {
+  CreateInviteCodeParams,
+  CreateShareAlbumParams,
+  GetShareAlbumParams,
+  ModifyShareAlbumParams,
+} from './share-album.interface';
 import { ShareAlbumClient } from '../internal/social/share-album/share-album.client';
 import { ShareAlbumMemberRole } from '../internal/social/share-album/share-album.enum';
 import { SocialClientException } from '../internal/social/social.exception';
@@ -85,12 +90,49 @@ export class ShareAlbumService {
     };
   }
 
+  /**
+   * 공유앨범 초대코드 생성
+   */
+  async createInviteCode(params: CreateInviteCodeParams) {
+    const { id, userId } = params;
+    const shareAlbum = await this.find(id);
+
+    if (!this.canUserCreateInviteCode(shareAlbum.shareAlbumMemberList, userId)) {
+      throw new ForbiddenException(ERROR_CODE.SHARE_ALBUM_INSUFFICIENT_PERMISSION);
+    }
+
+    try {
+      const { inviteCode } = await this.shareAlbumClient.createInviteCode(id);
+
+      return {
+        inviteCode,
+      };
+    } catch (error) {
+      if (!(error instanceof SocialClientException)) {
+        throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+
+      const errorInfo = error.getResponse();
+      switch (errorInfo.errorCode) {
+        case 'SHARE_ALBUM_NOT_FOUND':
+          throw new NotFoundException(ERROR_CODE.SHARE_ALBUM_NOT_FOUND);
+        default:
+          throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+    }
+  }
+
   private canUserView(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
     const viewerRoleLevel = ShareAlbumMemberRole.VIEWER;
     return this.canUserPerformAction(shareAlbumMembers, userId, viewerRoleLevel);
   }
 
   private canUserModify(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
+    const ownerRoleLevel = ShareAlbumMemberRole.OWNER;
+    return this.canUserPerformAction(shareAlbumMembers, userId, ownerRoleLevel);
+  }
+
+  private canUserCreateInviteCode(shareAlbumMembers: GetSharedAlbumMemberItem[], userId: number): boolean {
     const ownerRoleLevel = ShareAlbumMemberRole.OWNER;
     return this.canUserPerformAction(shareAlbumMembers, userId, ownerRoleLevel);
   }

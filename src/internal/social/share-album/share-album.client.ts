@@ -49,6 +49,18 @@ export class ShareAlbumClient {
     }
   }
 
+  /**
+   * 공유앨범 초대코드 생성
+   */
+  async createInviteCode(id: string) {
+    try {
+      const response = await this.socialClient.shareAlbumControllerCreateShareAlbumInviteCode(id);
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
   private errorHandler(error: any): SocialClientException {
     if (error instanceof AxiosError) {
       const errorInfo = error.response?.data || ERROR_CODE.INTERNAL_SERVER_ERROR;
