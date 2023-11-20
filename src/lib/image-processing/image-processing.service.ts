@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 
-import { ResizeImageOptions } from './image-processing.interface';
+import { ImageProcessingServiceResizeOptions } from './image-processing.interface';
 
 @Injectable()
 export class ImageProcessingService {
@@ -15,7 +15,7 @@ export class ImageProcessingService {
   /**
    * 이미지 리사이징
    */
-  async resize({ image, width, height }: ResizeImageOptions): Promise<Buffer> {
+  async resize({ image, width, height }: ImageProcessingServiceResizeOptions): Promise<Buffer> {
     return sharp(image).withMetadata().resize(width, height).toBuffer();
   }
 }

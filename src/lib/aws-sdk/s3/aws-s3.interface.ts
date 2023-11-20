@@ -1,4 +1,4 @@
-export interface GetFileFromS3Options {
+export interface AwsS3ServiceGetFileOptions {
   /** 버킷 이름 */
   bucket: string;
 
@@ -6,7 +6,7 @@ export interface GetFileFromS3Options {
   key: string;
 }
 
-export interface SaveFileToS3Options {
+export interface AwsS3ServiceSaveOptions {
   /** 버킷 이름 */
   bucket: string;
 

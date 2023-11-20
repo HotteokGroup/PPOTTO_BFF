@@ -1,4 +1,4 @@
-export interface ResizeImageOptions {
+export interface ImageProcessingServiceResizeOptions {
   /** Buffer 이미지 */
   image: Buffer;
 
