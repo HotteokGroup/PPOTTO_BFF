@@ -1,8 +1,7 @@
 import { S3, GetObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
-import sharp from 'sharp';
 
-import { GetFileFromS3Options, ResizeImageToWebpOptions, SaveFileToS3Options } from './aws-s3.interface';
+import { GetFileFromS3Options, SaveFileToS3Options } from './aws-s3.interface';
 
 @Injectable()
 export class AwsS3Service {
@@ -32,14 +31,5 @@ export class AwsS3Service {
       // ContentType: "image/webp",
     };
     await this.s3.putObject(params);
-  }
-
-  /**
-   * 이미지를 리사이징 후 webP 형식으로 변환하여 리턴한다
-   */
-  async resizeImageToWebp(params: ResizeImageToWebpOptions): Promise<Buffer> {
-    const { image, width, height } = params;
-
-    return sharp(image).withMetadata().resize(width, height).webp({ lossless: true }).toBuffer();
   }
 }
