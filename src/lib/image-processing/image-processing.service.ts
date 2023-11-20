@@ -1,16 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 
-import { ResizeImageToWebpOptions } from './image-processing.interface';
+import { ResizeImageOptions } from './image-processing.interface';
 
 @Injectable()
 export class ImageProcessingService {
   /**
-   * 이미지를 리사이징 후 webP 형식으로 변환하여 리턴한다
+   * 이미지를 WebP 형식으로 변환하여 리턴한다
    */
-  async resizeImageToWebp(params: ResizeImageToWebpOptions): Promise<Buffer> {
-    const { image, width, height } = params;
+  async toWebp(image: Buffer): Promise<Buffer> {
+    return sharp(image).withMetadata().webp({ lossless: true }).toBuffer();
+  }
 
-    return sharp(image).withMetadata().resize(width, height).webp({ lossless: true }).toBuffer();
+  /**
+   * 이미지 리사이징
+   */
+  async resize({ image, width, height }: ResizeImageOptions): Promise<Buffer> {
+    return sharp(image).withMetadata().resize(width, height).toBuffer();
   }
 }

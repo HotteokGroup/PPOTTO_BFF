@@ -1,4 +1,4 @@
-export interface ResizeImageToWebpOptions {
+export interface ResizeImageOptions {
   /** Buffer 이미지 */
   image: Buffer;
 
