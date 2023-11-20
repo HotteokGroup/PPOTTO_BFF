@@ -15,7 +15,7 @@ jobs:
           echo ${{ secrets.ENV_PROD }} >> ./environments/.env.production
 
       - name: AWS 로그인
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -23,7 +23,9 @@ jobs:
 
       - name: ECR 로그인
         id: ecr-login-info
-        uses: aws-actions/amazon-ecr-login@v1
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          mask-password: 'false'
 
       - name: 이미지 빌드 및 ECR 푸시
         id: build-image-info
