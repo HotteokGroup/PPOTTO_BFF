@@ -1,4 +1,4 @@
-import { S3, GetObjectCommandInput } from '@aws-sdk/client-s3';
+import { S3, GetObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 
@@ -25,7 +25,7 @@ export class AwsS3Service {
    * S3에 파일 저장
    */
   async saveFileToS3({ bucket, key, file }: SaveFileToS3Options) {
-    const params = {
+    const params: PutObjectCommandInput = {
       Bucket: bucket,
       Key: key,
       Body: file,
