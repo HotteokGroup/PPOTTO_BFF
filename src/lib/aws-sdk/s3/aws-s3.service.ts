@@ -10,7 +10,7 @@ export class AwsS3Service {
   /**
    * S3에서 파일 가져오기
    */
-  async getFileFromS3({ bucket, key }: GetFileFromS3Options) {
+  async getFile({ bucket, key }: GetFileFromS3Options) {
     const params: GetObjectCommandInput = {
       Bucket: bucket,
       Key: key,
@@ -23,7 +23,7 @@ export class AwsS3Service {
   /**
    * S3에 파일 저장
    */
-  async saveFileToS3({ bucket, key, file }: SaveFileToS3Options) {
+  async save({ bucket, key, file }: SaveFileToS3Options) {
     const params: PutObjectCommandInput = {
       Bucket: bucket,
       Key: key,
