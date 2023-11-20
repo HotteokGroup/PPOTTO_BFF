@@ -20,6 +20,7 @@ import { ShareAlbumClient } from './share-album/share-album.client';
     },
     FeedClient,
     ShareAlbumClient,
+    FeedClient,
   ],
   exports: [ShareAlbumClient, FeedClient, SocialApiClient],
 })

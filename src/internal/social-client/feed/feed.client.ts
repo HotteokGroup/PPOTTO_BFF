@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateFeedRequest, DefaultApi as SocialApiClient } from '@ppotto/social-api-client';
+import { CreateFeedRequest, DefaultApi as SocialApiClient, ModifyFeedRequest } from '@ppotto/social-api-client';
 import { AxiosError } from 'axios';
 
 import { ERROR_CODE } from '../../../lib/exception/error.constant';
@@ -15,6 +15,18 @@ export class FeedClient {
   async create(shareAlbumId: string, createFeedRequest: CreateFeedRequest) {
     try {
       const response = await this.socialApiClient.feedControllerCreateFeed(shareAlbumId, createFeedRequest);
+      return response.data;
+    } catch (error) {
+      throw this.errorHandler(error);
+    }
+  }
+
+  /**
+   * 피드 수정
+   */
+  async modify(shareAlbumId: string, feedId: string, modifyFeedRequest: ModifyFeedRequest) {
+    try {
+      const response = await this.socialApiClient.feedControllerUpdateFeed(shareAlbumId, feedId, modifyFeedRequest);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);

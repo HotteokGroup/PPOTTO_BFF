@@ -106,6 +106,11 @@ export const ERROR_CODE = dynamicRecord({
     message: '이미 가입된 멤버입니다.',
     status: HttpStatus.NOT_FOUND,
   },
+  SHARE_ALBUM_MEMBER_NOT_FOUND: {
+    errorCode: 'SHARE_ALBUM_MEMBER_NOT_FOUND',
+    message: '멤버를 찾을 수 없습니다.',
+    status: HttpStatus.NOT_FOUND,
+  },
 
   /**
    * 앨범 권한
@@ -114,6 +119,15 @@ export const ERROR_CODE = dynamicRecord({
     errorCode: 'SHARE_ALBUM_INSUFFICIENT_PERMISSION',
     message: '앨범에 접근할 권한이 부족합니다.',
     status: HttpStatus.FORBIDDEN,
+  },
+
+  /**
+   * 이미지
+   */
+  IMAGE_UPLOAD_FAILED: {
+    errorCode: 'IMAGE_UPLOAD_FAILED',
+    message: '이미지 업로드에 실패했습니다.',
+    status: HttpStatus.UNPROCESSABLE_ENTITY,
   },
 });
 

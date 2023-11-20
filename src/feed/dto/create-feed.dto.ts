@@ -1,34 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Expose, Type } from 'class-transformer';
-import { ArrayMinSize, IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-
-import { FeedContentType } from '../../internal/social-client/feed/feed.enum';
-
-class CreateFeedItem {
-  @ApiProperty({ description: '콘텐츠 ID', example: '123g21hj2' })
-  @IsString()
-  @IsNotEmpty()
-  contentId: string;
-
-  @ApiProperty({ description: '콘텐츠 타입', example: FeedContentType.Image, enum: FeedContentType })
-  @IsEnum(FeedContentType)
-  type: FeedContentType;
-
-  @ApiProperty({ description: '콘텐츠 URL', example: 'https://image.com' })
-  @IsOptional()
-  @IsString()
-  contentSmallUrl?: string;
-
-  @ApiProperty({ description: '콘텐츠 URL', example: 'https://image.com' })
-  @IsOptional()
-  @IsString()
-  contentMediumUrl?: string;
-
-  @ApiProperty({ description: '콘텐츠 URL', example: 'https://image.com' })
-  @IsOptional()
-  @IsString()
-  contentLargeUrl?: string;
-}
+import { Exclude, Expose } from 'class-transformer';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateFeedRequest {
   @ApiProperty({ description: '피드 내용', example: '피드 내용' })
@@ -36,11 +8,15 @@ export class CreateFeedRequest {
   @IsNotEmpty()
   description: string;
 
-  @ApiProperty({ description: '피드 콘텐츠' })
-  @IsArray()
-  @ArrayMinSize(1)
-  @Type(() => CreateFeedItem)
-  contents: CreateFeedItem[];
+  @ApiProperty({
+    description: '피드 콘텐츠(이미지 또는 동영상)',
+    type: 'array',
+    items: {
+      type: 'file',
+      format: 'binary',
+    },
+  })
+  files: Express.Multer.File[];
 }
 
 @Exclude()

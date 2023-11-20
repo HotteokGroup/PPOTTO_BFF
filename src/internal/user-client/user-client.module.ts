@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Configuration, DefaultApi as UserApiClient } from '@ppotto/user-api-client';
 
+import { FileStoreClient } from './file-store/file-store.client';
 import { TermsOfServiceClient } from './terms-of-service/terms-of-service.client';
 import { UserClient } from './user/user.client';
 import { VerificationClient } from './verification/verification.client';
@@ -22,7 +23,8 @@ import { VerificationClient } from './verification/verification.client';
     UserClient,
     TermsOfServiceClient,
     VerificationClient,
+    FileStoreClient,
   ],
-  exports: [UserClient, TermsOfServiceClient, VerificationClient, UserApiClient],
+  exports: [UserClient, TermsOfServiceClient, VerificationClient, FileStoreClient, UserApiClient],
 })
 export class UserClientModule {}

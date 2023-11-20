@@ -18,4 +18,11 @@ export class ImageProcessingService {
   async resize({ image, width, height }: ImageProcessingServiceResizeOptions): Promise<Buffer> {
     return sharp(image).withMetadata().resize(width, height).toBuffer();
   }
+
+  /**
+   * 이미지 형식인지 검증
+   */
+  isImage(file: Express.Multer.File): boolean {
+    return file.mimetype.includes('image/');
+  }
 }
