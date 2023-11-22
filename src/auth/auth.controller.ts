@@ -7,7 +7,7 @@ import { ConfirmVerificationRequest, ConfirmVerificationResponse } from './dto/c
 import { SendVerificationRequest, SendVerificationResponse } from './dto/send-verification.dto';
 import { ERROR_CODE, GenerateSwaggerDocumentByErrorCode } from '../lib/exception/error.constant';
 
-@Controller('auth')
+@Controller()
 @ApiTags('인증')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

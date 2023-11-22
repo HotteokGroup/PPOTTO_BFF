@@ -68,6 +68,6 @@ export class UserController {
   @UseGuards(AuthJwtGuard)
   @Get('user')
   async getUserInfo(@UserInfo() user: AuthJwtPayload) {
-    return plainToInstance(GetUserInfoResponse, await this.userService.getUserInfo(user.id));
+    return plainToInstance(GetUserInfoResponse, await this.userService.getInfo(user.id));
   }
 }

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ShareAlbumController } from './share-album.controller';
 import { ShareAlbumService } from './share-album.service';
-import { SocialClientModule } from '../internal/social/social.module';
+import { SocialClientModule } from '../internal/social-client/social-client.module';
 import { JwtUtilityModule } from '../lib/jwt/jwt-utility.module';
 
 @Module({

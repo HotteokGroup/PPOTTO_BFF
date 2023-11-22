@@ -14,9 +14,9 @@ import {
   JoinByInviteCodeParams,
   ModifyShareAlbumParams,
 } from './share-album.interface';
-import { ShareAlbumClient } from '../internal/social/share-album/share-album.client';
-import { ShareAlbumMemberRole } from '../internal/social/share-album/share-album.enum';
-import { SocialClientException } from '../internal/social/social.exception';
+import { ShareAlbumClient } from '../internal/social-client/share-album/share-album.client';
+import { ShareAlbumMemberRole } from '../internal/social-client/share-album/share-album.enum';
+import { SocialClientException } from '../internal/social-client/social-client.exception';
 import { ERROR_CODE } from '../lib/exception/error.constant';
 
 @Injectable()

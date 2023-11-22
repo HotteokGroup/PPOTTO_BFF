@@ -1,25 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import {
   CreateShareAlbumRequest,
-  DefaultApi as SocialClient,
+  DefaultApi as SocialApiClient,
   JoinShareAlbumByInviteCodeRequest,
   ModifyShareAlbumRequest,
 } from '@ppotto/social-api-client';
 import { AxiosError } from 'axios';
 
 import { ERROR_CODE } from '../../../lib/exception/error.constant';
-import { SocialClientException } from '../social.exception';
+import { SocialClientException } from '../social-client.exception';
 
 @Injectable()
 export class ShareAlbumClient {
-  constructor(private readonly socialClient: SocialClient) {}
+  constructor(private readonly socialApiClient: SocialApiClient) {}
 
   /**
    * 공유앨범 생성
    */
   async create(createShareAlbumRequest: CreateShareAlbumRequest) {
     try {
-      const response = await this.socialClient.shareAlbumControllerCreateShareAlbum(createShareAlbumRequest);
+      const response = await this.socialApiClient.shareAlbumControllerCreateShareAlbum(createShareAlbumRequest);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);
@@ -31,7 +31,7 @@ export class ShareAlbumClient {
    */
   async get(id: string) {
     try {
-      const response = await this.socialClient.shareAlbumControllerGetShareAlbum(id);
+      const response = await this.socialApiClient.shareAlbumControllerGetShareAlbum(id);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);
@@ -43,7 +43,7 @@ export class ShareAlbumClient {
    */
   async modify(id: string, modifyShareAlbumRequest: ModifyShareAlbumRequest) {
     try {
-      const response = await this.socialClient.shareAlbumControllerModifyShareAlbum(id, modifyShareAlbumRequest);
+      const response = await this.socialApiClient.shareAlbumControllerModifyShareAlbum(id, modifyShareAlbumRequest);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);
@@ -55,7 +55,7 @@ export class ShareAlbumClient {
    */
   async createInviteCode(id: string) {
     try {
-      const response = await this.socialClient.shareAlbumControllerCreateShareAlbumInviteCode(id);
+      const response = await this.socialApiClient.shareAlbumControllerCreateShareAlbumInviteCode(id);
       return response.data;
     } catch (error) {
       throw this.errorHandler(error);
@@ -67,7 +67,7 @@ export class ShareAlbumClient {
    */
   async joinByInviteCode(code: string, joinShareAlbumByInviteCodeRequest: JoinShareAlbumByInviteCodeRequest) {
     try {
-      const response = await this.socialClient.shareAlbumControllerJoinShareAlbumByInviteCode(
+      const response = await this.socialApiClient.shareAlbumControllerJoinShareAlbumByInviteCode(
         code,
         joinShareAlbumByInviteCodeRequest,
       );

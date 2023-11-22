@@ -1,17 +1,24 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 
-import { AgreeTermsOfServiceParams } from './terms-of-service.interface';
-import { UserClientException } from '../internal/user/user-client.exception';
-import { UserClientService } from '../internal/user/user-client.service';
+import { TermsOfServiceAgreeParams } from './terms-of-service.interface';
+import { TermsOfServiceClient } from '../internal/user-client/terms-of-service/terms-of-service.client';
+import { UserClient } from '../internal/user-client/user/user.client';
+import { UserClientException } from '../internal/user-client/user-client.exception';
 import { ERROR_CODE } from '../lib/exception/error.constant';
 
 @Injectable()
 export class TermsOfServiceService {
-  constructor(private readonly userClient: UserClientService) {}
+  constructor(
+    private readonly termsOfServiceClient: TermsOfServiceClient,
+    private readonly userClient: UserClient,
+  ) {}
 
-  async getTermsOfServiceList() {
+  /**
+   * 약관 리스트 가져오기
+   */
+  async getList() {
     try {
-      const { list } = await this.userClient.getTermsOfServiceList();
+      const { list } = await this.termsOfServiceClient.getList();
 
       return { list };
     } catch (error) {
@@ -19,8 +26,11 @@ export class TermsOfServiceService {
     }
   }
 
-  async agreeTermsOfService(params: AgreeTermsOfServiceParams) {
-    const user = await this.userClient.getUserInfo(params.userId).catch((error) => {
+  /**
+   * 약관 동의하기
+   */
+  async agree(params: TermsOfServiceAgreeParams) {
+    const user = await this.userClient.getInfo(params.userId).catch((error) => {
       if (!(error instanceof UserClientException)) {
         throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }
@@ -47,7 +57,7 @@ export class TermsOfServiceService {
       throw new BadRequestException(ERROR_CODE.TERMS_OF_SERVICE_ALREADY_AGREE);
     }
 
-    await this.userClient.agreeTermsOfService({ userId: params.userId, termsOfServiceIds }).catch((error) => {
+    await this.termsOfServiceClient.agree({ userId: params.userId, termsOfServiceIds }).catch((error) => {
       if (!(error instanceof UserClientException)) {
         throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
       }

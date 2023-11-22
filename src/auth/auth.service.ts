@@ -3,21 +3,24 @@ import { ConfirmVerificationResponseVerificationTypeEnum } from '@ppotto/user-ap
 
 import { ConfirmVerificationRequest, ConfirmVerificationResponse } from './dto/confirm-verification.dto';
 import { SendVerificationRequest, SendVerificationResponse } from './dto/send-verification.dto';
-import { UserClientException } from '../internal/user/user-client.exception';
-import { UserClientService } from '../internal/user/user-client.service';
+import { UserClientException } from '../internal/user-client/user-client.exception';
+import { VerificationClient } from '../internal/user-client/verification/verification.client';
 import { ERROR_CODE } from '../lib/exception/error.constant';
 import { JwtUtilityService } from '../lib/jwt/jwt-utility.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userClient: UserClientService,
+    private readonly verificationClient: VerificationClient,
     private readonly jwtService: JwtUtilityService,
   ) {}
 
+  /**
+   * 인증 요청
+   */
   async sendVerification(params: SendVerificationRequest): Promise<SendVerificationResponse> {
     try {
-      const { id } = await this.userClient.sendVerification(params);
+      const { id } = await this.verificationClient.sendVerification(params);
 
       return { id };
     } catch (error) {
@@ -35,9 +38,12 @@ export class AuthService {
     }
   }
 
+  /**
+   * 인증 확인
+   */
   async confirmVerification(params: ConfirmVerificationRequest): Promise<ConfirmVerificationResponse> {
     try {
-      const verification = await this.userClient.confirmVerification(params);
+      const verification = await this.verificationClient.confirmVerification(params);
       const { id, result, remaining, emailAddress, verificationType } = verification;
 
       // 인증 실패 시

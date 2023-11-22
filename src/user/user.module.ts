@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { UserClientModule } from '../internal/user/user-client.module';
+import { UserClientModule } from '../internal/user-client/user-client.module';
 import { JwtUtilityModule } from '../lib/jwt/jwt-utility.module';
 
 @Module({
