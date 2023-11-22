@@ -2,16 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose } from 'class-transformer';
 import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateIf } from 'class-validator';
 
-import { VerificationType } from '../../internal/user/user-client.enum';
+import { VerificationType } from '../../internal/user-client/user/user.enum';
 
 export class SendVerificationRequest {
-  @ApiProperty({ description: '인증 타입', example: VerificationType.Email, enum: VerificationType })
+  @ApiProperty({ description: '인증 타입', example: VerificationType.EMAIL, enum: VerificationType })
   @IsEnum(VerificationType)
   @IsNotEmpty()
   verificationType: VerificationType;
 
   @ApiProperty({ description: '이메일 주소 (인증 타입이 이메일인 경우 필수)', example: 'test@naver.com' })
-  @ValidateIf((o) => o.verificationType === VerificationType.Email)
+  @ValidateIf((o) => o.verificationType === VerificationType.EMAIL)
   @IsEmail()
   @IsOptional()
   emailAddress?: string;

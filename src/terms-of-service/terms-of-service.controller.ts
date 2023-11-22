@@ -22,7 +22,7 @@ export class TermsOfServiceController {
   @GenerateSwaggerDocumentByErrorCode([ERROR_CODE.INTERNAL_SERVER_ERROR, ERROR_CODE.INVALID_DATA])
   @Get()
   async getTermsOfServiceList() {
-    return plainToInstance(GetTermsOfServiceResponse, await this.termsOfServiceService.getTermsOfServiceList());
+    return plainToInstance(GetTermsOfServiceResponse, await this.termsOfServiceService.getList());
   }
 
   @ApiOperation({
@@ -40,7 +40,7 @@ export class TermsOfServiceController {
   @UseGuards(AuthJwtGuard)
   @Post('/agree')
   async agreeTermsOfService(@UserInfo() user: AuthJwtPayload, @Body() data: AgreeTermsOfServiceRequest) {
-    await this.termsOfServiceService.agreeTermsOfService({
+    await this.termsOfServiceService.agree({
       userId: user.id,
       termsOfServiceIds: data.termsOfServiceIds,
     });
