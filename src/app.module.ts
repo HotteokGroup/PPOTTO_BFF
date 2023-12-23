@@ -11,6 +11,7 @@ import { APP_FILTER, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { FeedModule } from './feed/feed.module';
 import { AllExceptionsFilter } from './lib/exception/all-exception.filter';
 import { ERROR_CODE } from './lib/exception/error.constant';
 import { ShareAlbumModule } from './share-album/share-album.module';
@@ -24,6 +25,7 @@ import { UserModule } from './user/user.module';
     UserModule,
     TermsOfServiceModule,
     ShareAlbumModule,
+    FeedModule,
   ],
   controllers: [AppController],
   providers: [

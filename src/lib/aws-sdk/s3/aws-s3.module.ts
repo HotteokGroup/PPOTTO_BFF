@@ -20,6 +20,7 @@ import { AwsS3Service } from './aws-s3.service';
       },
       inject: [ConfigService],
     },
+    AwsS3Service,
   ],
   exports: [AwsS3Service],
 })

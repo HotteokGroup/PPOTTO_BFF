@@ -1,4 +1,4 @@
 export enum FeedContentType {
-  Image = 'IMAGE',
-  Video = 'VIDEO',
+  IMAGE = 'IMAGE',
+  VIDEO = 'VIDEO',
 }
