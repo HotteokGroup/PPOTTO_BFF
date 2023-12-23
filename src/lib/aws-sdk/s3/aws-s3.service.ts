@@ -1,7 +1,7 @@
 import { S3, GetObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 
-import { AwsS3ServiceGetFileOptions, AwsS3ServiceSaveOptions } from './aws-s3.interface';
+import { AwsS3ServiceGetFileOptions, AwsS3ServiceSaveOptions, UploadImagesParams } from './aws-s3.interface';
 
 @Injectable()
 export class AwsS3Service {
@@ -31,5 +31,22 @@ export class AwsS3Service {
       // ContentType: "image/webp",
     };
     await this.s3.putObject(params);
+  }
+
+  /**
+   * 여러 이미지를 S3에 업로드
+   */
+  async uploadImages({ bucket, imageUploads }: UploadImagesParams): Promise<void> {
+    const uploadPromises = imageUploads.map(({ key, file }) => this.save({ bucket, key, file }));
+
+    const results = await Promise.allSettled(uploadPromises);
+
+    const rejectedResults = results.filter((result) => result.status === 'rejected');
+    if (rejectedResults.length > 0) {
+      const errorMessages = rejectedResults
+        .map((result) => (result as PromiseRejectedResult).reason.message)
+        .join(', ');
+      throw new Error(`S3 업로드 실패: ${errorMessages}`);
+    }
   }
 }

@@ -1,4 +1,4 @@
 export enum ContentType {
-  FeedImage = 'FEED_IMAGE',
-  ProfileImage = 'PROFILE_IMAGE',
+  FEED_IMAGE = 'FEED_IMAGE',
+  PROFILE_IMAGE = 'PROFILE_IMAGE',
 }

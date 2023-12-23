@@ -7,7 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import dayjs from 'dayjs';
 
-import { CreateFeedParams } from './feed.interface';
+import { CreateFeedContentParams, CreateFeedParams, FeedContent, FeedContentFileUrls } from './feed.interface';
 import { FeedClient } from '../internal/social-client/feed/feed.client';
 import { FeedContentType } from '../internal/social-client/feed/feed.enum';
 import { SocialClientException } from '../internal/social-client/social-client.exception';
@@ -42,7 +42,6 @@ export class FeedService {
    * 피드 생성
    */
   async create(params: CreateFeedParams) {
-    const today = dayjs().format('YYYY-MM-DD');
     const { shareAlbumId, userId, description, contents } = params;
 
     let feedId: string;
@@ -66,103 +65,13 @@ export class FeedService {
       }
     }
 
+    // 피드 콘텐츠 생성
     const feedContents = await Promise.all(
-      contents.map(async (content) => {
-        const file = content;
-        const originImage = file.buffer;
-
-        if (this.imageProcessingService.isImage(file)) {
-          const sizes = [222, 714, 1400];
-
-          // 이미지 리사이징 및 형식 변경
-          const [smallImage, mediumImage, largeImage] = await Promise.allSettled(
-            sizes.map(async (size) => {
-              const resizedImage = await this.imageProcessingService.resize({ image: originImage, width: size });
-              return this.imageProcessingService.toWebp(resizedImage);
-            }),
-          );
-
-          // 이미지 처리에 실패했을 경우
-          if (
-            smallImage.status === 'rejected' ||
-            mediumImage.status === 'rejected' ||
-            largeImage.status === 'rejected'
-          ) {
-            throw new UnprocessableEntityException(ERROR_CODE.IMAGE_UPLOAD_FAILED);
-          }
-
-          let userFileStoreId: string;
-          try {
-            // 임시 UserFileStore ID 생성
-            const userFileStore = await this.fileStoreClient.create({
-              userId,
-              contentType: ContentType.FeedImage,
-            });
-            userFileStoreId = userFileStore.id;
-          } catch (error) {
-            if (!(error instanceof UserClientException)) {
-              throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
-            }
-
-            throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
-          }
-
-          const fileName = `${shareAlbumId}_${feedId}_${userFileStoreId}`;
-          const originalFileUrl = `${this.originImagePath}/${today}/${fileName}`;
-          const smallThumbnailUrl = `${this.thumbnailImagePath}/${today}/${fileName}/small.webp`;
-          const mediumThumbnailUrl = `${this.thumbnailImagePath}/${today}/${fileName}/medium.webp`;
-          const largeThumbnailUrl = `${this.thumbnailImagePath}/${today}/${fileName}/large.webp`;
-
-          // S3 업로드
-          const [smallImageSaveResult, mediumImageSaveResult, largeImageSaveResult] = await Promise.allSettled([
-            this.s3.save({ bucket: this.bucketName, key: originalFileUrl, file: originImage }),
-            this.s3.save({ bucket: this.bucketName, key: smallThumbnailUrl, file: smallImage.value }),
-            this.s3.save({ bucket: this.bucketName, key: mediumThumbnailUrl, file: mediumImage.value }),
-            this.s3.save({ bucket: this.bucketName, key: largeThumbnailUrl, file: largeImage.value }),
-          ]);
-
-          // 이미지 업로드에 실패했을 경우
-          if (
-            smallImageSaveResult.status === 'rejected' ||
-            mediumImageSaveResult.status === 'rejected' ||
-            largeImageSaveResult.status === 'rejected'
-          ) {
-            throw new UnprocessableEntityException(ERROR_CODE.IMAGE_UPLOAD_FAILED);
-          }
-
-          // 이미지를 USER DB의 UserFileStore에 저장
-          try {
-            await this.fileStoreClient.modify(userFileStoreId, {
-              originalFileUrl,
-              smallThumbnailUrl,
-              mediumThumbnailUrl,
-              largeThumbnailUrl,
-            });
-          } catch (error) {
-            if (!(error instanceof UserClientException)) {
-              throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
-            }
-          }
-
-          // 피드 컨텐츠
-          return {
-            userFileStoreId,
-            type: FeedContentType.Image,
-            contentSmallUrl: smallThumbnailUrl,
-            contentMediumUrl: mediumThumbnailUrl,
-            contentLargeUrl: largeThumbnailUrl,
-          };
-        }
-
-        // TODO: 비디오 처리 추가 예정
-
-        // 콘텐츠 처리 중 알 수 없는 오류가 발생할 경우
-        throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
-      }),
+      contents.map(async (content) => this.createFeedContent({ content, userId, shareAlbumId, feedId })),
     );
 
     try {
-      // 피드 컨텐츠 추가
+      // 생성한 피드 콘텐츠를 미리 생성한 피드에 추가
       await this.feedClient.modify(shareAlbumId, feedId, {
         contents: feedContents,
       });
@@ -183,5 +92,135 @@ export class FeedService {
     }
 
     return { id: feedId };
+  }
+
+  /**
+   * 피드 콘텐츠 생성
+   */
+  private async createFeedContent({
+    content,
+    userId,
+    shareAlbumId,
+    feedId,
+  }: CreateFeedContentParams): Promise<FeedContent> {
+    // 이미지 형식인지 확인
+    if (this.imageProcessingService.isImage(content)) {
+      const originalImage = content.buffer;
+      const sizes = [222, 714, 1400];
+
+      // 이미지 검증 및 처리
+      const { smallImage, mediumImage, largeImage } = await this.imageProcessingService.processImage(content, sizes);
+      const userFileStoreId = await this.createUserFileStore(userId);
+      const today = dayjs().format('YYYY-MM-DD');
+
+      // 파일 이름 및 URL 생성
+      const { originalFileUrl, smallThumbnailUrl, mediumThumbnailUrl, largeThumbnailUrl } = this.generateFileUrls(
+        shareAlbumId,
+        feedId,
+        userFileStoreId,
+        today,
+      );
+
+      try {
+        // S3에 이미지 업로드
+        await this.s3.uploadImages({
+          bucket: this.bucketName,
+          imageUploads: [
+            {
+              key: originalFileUrl,
+              file: originalImage,
+            },
+            {
+              key: smallThumbnailUrl,
+              file: smallImage,
+            },
+            {
+              key: mediumThumbnailUrl,
+              file: mediumImage,
+            },
+            {
+              key: largeThumbnailUrl,
+              file: largeImage,
+            },
+          ],
+        });
+      } catch (error) {
+        throw new UnprocessableEntityException(ERROR_CODE.IMAGE_UPLOAD_FAILED);
+      }
+
+      // DB에 저장된 UserFileStore 수정
+      await this.updateUserFileStore(
+        userFileStoreId,
+        originalFileUrl,
+        smallThumbnailUrl,
+        mediumThumbnailUrl,
+        largeThumbnailUrl,
+      );
+
+      return {
+        userFileStoreId,
+        type: FeedContentType.IMAGE,
+        contentSmallUrl: smallThumbnailUrl,
+        contentMediumUrl: mediumThumbnailUrl,
+        contentLargeUrl: largeThumbnailUrl,
+      };
+    }
+
+    // TODO: 비디오 처리 추가 예정
+
+    // 콘텐츠 처리 중 알 수 없는 오류가 발생할 경우
+    throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+  }
+
+  private async createUserFileStore(userId: number): Promise<string> {
+    try {
+      const userFileStore = await this.fileStoreClient.create({
+        userId,
+        contentType: ContentType.FEED_IMAGE,
+      });
+      return userFileStore.id;
+    } catch (error) {
+      if (!(error instanceof UserClientException)) {
+        throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+
+      throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  private generateFileUrls(
+    shareAlbumId: string,
+    feedId: string,
+    userFileStoreId: string,
+    today: string,
+  ): FeedContentFileUrls {
+    const fileName = `${shareAlbumId}_${feedId}_${userFileStoreId}`;
+    return {
+      originalFileUrl: `${this.originImagePath}/${today}/${fileName}`,
+      smallThumbnailUrl: `${this.thumbnailImagePath}/${today}/${fileName}/small.webp`,
+      mediumThumbnailUrl: `${this.thumbnailImagePath}/${today}/${fileName}/medium.webp`,
+      largeThumbnailUrl: `${this.thumbnailImagePath}/${today}/${fileName}/large.webp`,
+    };
+  }
+
+  private async updateUserFileStore(
+    userFileStoreId: string,
+    originalFileUrl: string,
+    smallThumbnailUrl: string,
+    mediumThumbnailUrl: string,
+    largeThumbnailUrl: string,
+  ): Promise<void> {
+    try {
+      await this.fileStoreClient.modify(userFileStoreId, {
+        originalFileUrl,
+        smallThumbnailUrl,
+        mediumThumbnailUrl,
+        largeThumbnailUrl,
+      });
+    } catch (error) {
+      if (!(error instanceof UserClientException)) {
+        throw new InternalServerErrorException(ERROR_CODE.INTERNAL_SERVER_ERROR);
+      }
+    }
   }
 }
